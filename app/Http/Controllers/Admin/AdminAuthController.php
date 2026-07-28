@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Berita;
+use App\Models\Pengumuman;
+use App\Models\Agenda;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -57,8 +59,9 @@ class AdminAuthController extends Controller
     public function dashboard(Request $request): View
     {
         return view('admin.dashboard', [
-            'user' => $request->user(),
             'jumlahBerita' => Berita::count(),
+            'jumlahPengumuman' => Pengumuman::count(),
+            'jumlahAgenda' => Agenda::count(),
         ]);
     }
 

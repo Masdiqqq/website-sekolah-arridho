@@ -173,108 +173,215 @@
                 </div>
 
                 <div class="mt-12 grid gap-6 lg:grid-cols-3">
-                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-bold text-slate-900">Berita Terbaru</h3>
-                            <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Berita</span>
-                        </div>
+                    {{-- Berita terbaru --}}
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-slate-900">
+                            Berita Terbaru
+                        </h3>
 
-                        <div class="mt-6 space-y-5">
-                            <article class="flex gap-4">
-                                <div class="flex h-20 w-24 shrink-0 items-center justify-center rounded-xl bg-emerald-100">
-                                    <span class="text-2xl">📰</span>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-medium text-emerald-700">27 Juli 2026</p>
-                                    <h4 class="mt-1 font-bold leading-6 text-slate-800">Kegiatan Belajar Mengajar Tahun Ajaran Baru</h4>
-                                </div>
-                            </article>
-
-                            <article class="flex gap-4 border-t border-slate-100 pt-5">
-                                <div class="flex h-20 w-24 shrink-0 items-center justify-center rounded-xl bg-emerald-100">
-                                    <span class="text-2xl">👥</span>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-medium text-emerald-700">20 Juli 2026</p>
-                                    <h4 class="mt-1 font-bold leading-6 text-slate-800">Masa Ta’aruf Siswa Madrasah</h4>
-                                </div>
-                            </article>
-                        </div>
-
-                        <a href="#" class="mt-7 inline-flex font-semibold text-emerald-700 hover:text-emerald-800">
-                            Lihat semua berita <span class="ml-2">→</span>
-                        </a>
+                        <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+                            Berita
+                        </span>
                     </div>
 
-                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-bold text-slate-900">Pengumuman</h3>
-                            <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">Penting</span>
-                        </div>
+                    <div class="mt-6 space-y-5">
+                        @forelse ($beritas as $berita)
+                            <a
+                                href="{{ route('berita.show', $berita->slug) }}"
+                                class="flex gap-4 transition hover:opacity-80
+                                {{ ! $loop->first ? 'border-t border-slate-100 pt-5' : '' }}"
+                            >
+                                @if ($berita->gambar)
+                                    <img
+                                        src="{{ asset('storage/' . $berita->gambar) }}"
+                                        alt="{{ $berita->judul }}"
+                                        class="h-20 w-24 shrink-0 rounded-xl object-cover"
+                                    >
+                                @else
+                                    <div class="flex h-20 w-24 shrink-0 items-center justify-center rounded-xl bg-emerald-100">
+                                        <span class="text-2xl">
+                                            📰
+                                        </span>
+                                    </div>
+                                @endif
 
-                        <div class="mt-6 space-y-4">
-                            <article class="rounded-xl bg-slate-50 p-4">
-                                <p class="text-xs font-semibold text-emerald-700">25 Juli 2026</p>
-                                <h4 class="mt-2 font-bold leading-6 text-slate-800">Pembagian Jadwal Pelajaran Semester Ganjil</h4>
-                                <p class="mt-2 text-sm leading-6 text-slate-500">Jadwal pelajaran baru dapat dilihat melalui wali kelas.</p>
-                            </article>
+                                <div class="min-w-0">
+                                    <p class="text-xs font-medium text-emerald-700">
+                                        {{ optional($berita->tanggal_publikasi)->format('d/m/Y') }}
+                                    </p>
 
-                            <article class="rounded-xl bg-slate-50 p-4">
-                                <p class="text-xs font-semibold text-emerald-700">18 Juli 2026</p>
-                                <h4 class="mt-2 font-bold leading-6 text-slate-800">Pendaftaran PPDB Telah Dibuka</h4>
-                                <p class="mt-2 text-sm leading-6 text-slate-500">Pendaftaran peserta didik baru dilakukan secara online.</p>
-                            </article>
-                        </div>
+                                    <h4 class="mt-1 line-clamp-2 font-bold leading-6 text-slate-800">
+                                        {{ $berita->judul }}
+                                    </h4>
 
-                        <a href="#" class="mt-7 inline-flex font-semibold text-emerald-700 hover:text-emerald-800">
-                            Lihat semua pengumuman <span class="ml-2">→</span>
-                        </a>
+                                    @if ($berita->ringkasan)
+                                        <p class="mt-1 line-clamp-1 text-sm text-slate-500">
+                                            {{ $berita->ringkasan }}
+                                        </p>
+                                    @endif
+                                </div>
+                            </a>
+                        @empty
+                            <div class="rounded-xl bg-slate-50 px-5 py-8 text-center">
+                                <p class="font-semibold text-slate-700">
+                                    Belum ada berita
+                                </p>
+
+                                <p class="mt-1 text-sm text-slate-500">
+                                    Berita yang diterbitkan akan tampil di sini.
+                                </p>
+                            </div>
+                        @endforelse
                     </div>
 
-                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-bold text-slate-900">Agenda Kegiatan</h3>
-                            <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">Agenda</span>
-                        </div>
-
-                        <div class="mt-6 space-y-5">
-                            <article class="flex items-center gap-4">
-                                <div class="w-16 shrink-0 overflow-hidden rounded-xl border border-emerald-200 text-center">
-                                    <div class="bg-emerald-700 py-1 text-xs font-bold text-white">AGU</div>
-                                    <div class="py-2 text-2xl font-bold text-emerald-800">17</div>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold leading-6 text-slate-800">Upacara Hari Kemerdekaan</h4>
-                                    <p class="mt-1 text-sm text-slate-500">07.00 WIB · Lapangan Madrasah</p>
-                                </div>
-                            </article>
-
-                            <article class="flex items-center gap-4 border-t border-slate-100 pt-5">
-                                <div class="w-16 shrink-0 overflow-hidden rounded-xl border border-emerald-200 text-center">
-                                    <div class="bg-emerald-700 py-1 text-xs font-bold text-white">SEP</div>
-                                    <div class="py-2 text-2xl font-bold text-emerald-800">10</div>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold leading-6 text-slate-800">Penilaian Tengah Semester</h4>
-                                    <p class="mt-1 text-sm text-slate-500">07.30 WIB · Ruang Kelas</p>
-                                </div>
-                            </article>
-
-                            <article class="flex items-center gap-4 border-t border-slate-100 pt-5">
-                                <div class="w-16 shrink-0 overflow-hidden rounded-xl border border-emerald-200 text-center">
-                                    <div class="bg-emerald-700 py-1 text-xs font-bold text-white">OKT</div>
-                                    <div class="py-2 text-2xl font-bold text-emerald-800">21</div>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold leading-6 text-slate-800">Peringatan Hari Santri</h4>
-                                    <p class="mt-1 text-sm text-slate-500">08.00 WIB · Aula Madrasah</p>
-                                </div>
-                            </article>
-                        </div>
-
-                        <a href="#" class="mt-7 inline-flex font-semibold text-emerald-700 hover:text-emerald-800">
-                            Lihat semua agenda <span class="ml-2">→</span>
+                    @if ($beritas->isNotEmpty())
+                        <a
+                            href="#berita"
+                            class="mt-7 inline-flex font-semibold text-emerald-700 hover:text-emerald-800"
+                        >
+                            Lihat berita terbaru
+                            <span class="ml-2">→</span>
                         </a>
+                    @endif
+                </div>
+                               
+                    {{-- Pengumuman --}}
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div class="flex items-center justify-between gap-3">
+                        <h3 class="text-xl font-bold text-slate-900">
+                            Pengumuman
+                        </h3>
+
+                        <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
+                            Penting
+                        </span>
+                    </div>
+
+                    <div class="mt-6 space-y-4">
+                        @forelse ($pengumumans as $pengumuman)
+                        <a
+                            href="{{ route('pengumuman.show', $pengumuman) }}"
+                            class="block rounded-xl bg-slate-50 p-4 transition hover:bg-emerald-50 hover:shadow-sm"
+                        >
+                            <p class="text-xs font-semibold text-emerald-700">
+                                {{ $pengumuman->tanggal_publikasi?->format('d/m/Y') }}
+                            </p>
+
+                            <h4 class="mt-2 font-bold leading-6 text-slate-800">
+                                {{ $pengumuman->judul }}
+                            </h4>
+
+                            <p class="mt-2 line-clamp-3 text-sm leading-6 text-slate-500">
+                                {{ $pengumuman->isi }}
+                            </p>
+
+                            <p class="mt-3 text-sm font-semibold text-emerald-700">
+                                Baca selengkapnya →
+                            </p>
+                        </a>
+                    @empty
+                            <div class="rounded-xl bg-slate-50 px-5 py-8 text-center">
+                                <p class="font-semibold text-slate-700">
+                                    Belum ada pengumuman
+                                </p>
+
+                                <p class="mt-1 text-sm text-slate-500">
+                                    Pengumuman yang diterbitkan akan tampil di sini.
+                                </p>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    @if ($pengumumans->isNotEmpty())
+                        <p class="mt-7 text-sm font-semibold text-emerald-700">
+                            Pengumuman terbaru MTs Arridho
+                        </p>
+                    @endif
+                </div>
+
+                    {{-- Agenda --}}
+                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="text-xl font-bold text-slate-900">
+                                Agenda Kegiatan
+                            </h3>
+
+                            <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+                                Agenda
+                            </span>
+                        </div>
+
+                        @php
+                            $namaBulan = [
+                                1 => 'JAN',
+                                2 => 'FEB',
+                                3 => 'MAR',
+                                4 => 'APR',
+                                5 => 'MEI',
+                                6 => 'JUN',
+                                7 => 'JUL',
+                                8 => 'AGU',
+                                9 => 'SEP',
+                                10 => 'OKT',
+                                11 => 'NOV',
+                                12 => 'DES',
+                            ];
+                        @endphp
+
+                        <div class="mt-6 divide-y divide-slate-100">
+
+                            @forelse ($agendas as $agenda)
+                                <article class="flex gap-4 py-5 first:pt-0">
+
+                                    <div class="w-16 shrink-0 overflow-hidden rounded-xl border border-emerald-200 text-center">
+
+                                        <div class="bg-emerald-700 px-2 py-1 text-xs font-bold text-white">
+                                            {{ $namaBulan[$agenda->tanggal_mulai->month] }}
+                                        </div>
+
+                                        <div class="px-2 py-2 text-2xl font-bold text-emerald-900">
+                                            {{ $agenda->tanggal_mulai->format('d') }}
+                                        </div>
+
+                                    </div>
+
+                                    <div class="min-w-0">
+                                        <h4 class="font-bold leading-6 text-slate-900">
+                                            {{ $agenda->judul }}
+                                        </h4>
+
+                                        <p class="mt-1 text-sm leading-6 text-slate-500">
+                                            {{ $agenda->tanggal_mulai->format('H.i') }} WIB
+
+                                            @if ($agenda->lokasi)
+                                                · {{ $agenda->lokasi }}
+                                            @endif
+                                        </p>
+                                    </div>
+
+                                </article>
+                            @empty
+                                <div class="rounded-xl bg-slate-50 px-5 py-8 text-center">
+                                    <p class="font-semibold text-slate-700">
+                                        Belum ada agenda
+                                    </p>
+
+                                    <p class="mt-1 text-sm text-slate-500">
+                                        Agenda yang diterbitkan akan tampil di sini.
+                                    </p>
+                                </div>
+                            @endforelse
+
+                        </div>
+
+                        @if ($agendas->isNotEmpty())
+                            <p class="mt-5 text-sm font-semibold text-emerald-700">
+                                Agenda kegiatan MTs Arridho
+                            </p>
+                        @endif
+
                     </div>
                 </div>
             </div>
