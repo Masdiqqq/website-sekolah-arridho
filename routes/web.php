@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
             ->whereNotNull('tanggal_publikasi')
             ->where('tanggal_publikasi', '<=', now())
             ->latest('tanggal_publikasi')
-            ->take(2)
+            ->take(4)
             ->get();
 
         $pengumumans = Pengumuman::query()
@@ -37,7 +37,7 @@ use Illuminate\Support\Facades\Route;
             ->where('status', 'published')
             ->where('tanggal_mulai', '>=', now()->startOfDay())
             ->oldest('tanggal_mulai')
-            ->take(3)
+            ->take(4)
             ->get();
 
         return view('home', compact(
@@ -46,6 +46,18 @@ use Illuminate\Support\Facades\Route;
             'agendas'
         ));
     })->name('home');
+
+// Daftar semua berita yang sudah diterbitkan
+Route::get('/berita', function () {
+    $beritas = Berita::query()
+        ->where('status', 'published')
+        ->whereNotNull('tanggal_publikasi')
+        ->where('tanggal_publikasi', '<=', now())
+        ->latest('tanggal_publikasi')
+        ->paginate(9);
+
+    return view('berita.index', compact('beritas'));
+})->name('berita.index');
 
 // Detail berita
 Route::get('/berita/{berita:slug}', function (Berita $berita) {
@@ -58,6 +70,19 @@ Route::get('/berita/{berita:slug}', function (Berita $berita) {
 
     return view('berita.show', compact('berita'));
 })->name('berita.show');
+
+// Daftar semua pengumuman yang telah diterbitkan
+Route::get('/pengumuman', function () {
+    $pengumumans = Pengumuman::query()
+        ->where('status', 'published')
+        ->whereNotNull('tanggal_publikasi')
+        ->where('tanggal_publikasi', '<=', now())
+        ->latest('tanggal_publikasi')
+        ->paginate(9);
+
+    return view('pengumuman.index', compact('pengumumans'));
+})->name('pengumuman.index');
+
 
 // Detail pengumuman
 Route::get('/pengumuman/{pengumuman}', function (
@@ -75,6 +100,26 @@ Route::get('/pengumuman/{pengumuman}', function (
         compact('pengumuman')
     );
 })->name('pengumuman.show');
+
+// Daftar semua agenda yang telah diterbitkan
+Route::get('/agenda', function () {
+    $agendaMendatang = Agenda::query()
+        ->where('status', 'published')
+        ->where('tanggal_mulai', '>=', now()->startOfDay())
+        ->oldest('tanggal_mulai')
+        ->get();
+
+    $agendaSelesai = Agenda::query()
+        ->where('status', 'published')
+        ->where('tanggal_mulai', '<', now()->startOfDay())
+        ->latest('tanggal_mulai')
+        ->get();
+
+    return view('agenda.index', compact(
+        'agendaMendatang',
+        'agendaSelesai'
+    ));
+})->name('agenda.index');
 
 
 

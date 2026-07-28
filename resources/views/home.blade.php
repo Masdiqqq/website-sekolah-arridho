@@ -140,25 +140,51 @@
                         </a>
                     </div>
 
-                    <div class="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-lg">
-                        <div class="relative h-[420px] overflow-hidden bg-emerald-50">
-                            <img src="{{ asset('images/kepmad.jpeg') }}" alt="Foto Kepala MTs Arridho" class="h-full w-full object-cover object-top">
-                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-6 pb-6 pt-20">
-                                <p class="text-sm font-medium text-emerald-100">Kepala Madrasah</p>
-                                <h3 class="mt-1 text-xl font-bold text-white">MTs Arridho</h3>
-                            </div>
-                        </div>
+                    <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg">
 
-                        <div class="p-7 sm:p-8">
-                            <p class="text-4xl font-bold leading-none text-emerald-600">“</p>
-                            <p class="mt-2 leading-7 text-slate-600">
-                                Selamat datang di website resmi MTs Arridho. Website ini menjadi sarana penyampaian informasi, kegiatan, prestasi, dan perkembangan madrasah kepada siswa, orang tua, serta masyarakat.
-                            </p>
-                            <div class="mt-6 border-t border-slate-200 pt-5">
-                                <h3 class="font-bold text-slate-900">Kepala MTs Arridho</h3>
-                                <p class="mt-1 text-sm text-slate-500">Nama kepala madrasah belum diisi</p>
-                            </div>
-                        </div>
+                {{-- Foto Kepala Madrasah --}}
+                <div class="relative">
+                    <img
+                        src="{{ asset('images/kepmad.jpeg') }}"
+                        alt="Kepala Madrasah MTs Arridho"
+                        class="h-[280px] w-full object-cover object-[70%_38%] sm:h-[320px] lg:h-[330px]"
+                    >
+
+                    <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent px-5 pb-5 pt-16 text-white">
+                        <p class="text-xs font-semibold text-emerald-100">
+                            Kepala Madrasah
+                        </p>
+
+                        <h3 class="mt-1 text-lg font-bold">
+                            MTs Arridho
+                        </h3>
+                    </div>
+                </div>
+
+                {{-- Sambutan di bawah foto --}}
+                <div class="p-6 sm:p-7">
+
+                    <div class="text-3xl font-bold leading-none text-emerald-600">
+                        “
+                    </div>
+
+                    <p class="mt-4 text-sm leading-7 text-slate-600">
+                        Selamat datang di website resmi MTs Arridho. Website ini menjadi
+                        sarana penyampaian informasi, kegiatan, prestasi, dan perkembangan
+                        madrasah kepada siswa, orang tua, serta masyarakat.
+                    </p>
+
+                    <div class="mt-5 border-t border-slate-200 pt-4">
+                        <p class="font-bold text-slate-900">
+                            Kepala MTs Arridho
+                        </p>
+
+                        <p class="mt-1 text-sm text-slate-500">
+                            Nama kepala madrasah belum diisi
+                        </p>
+                    </div>
+                </div>
+            </div>
                     </div>
                 </div>
             </div>
@@ -174,7 +200,7 @@
 
                 <div class="mt-12 grid gap-6 lg:grid-cols-3">
                     {{-- Berita terbaru --}}
-                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <div class="flex items-center justify-between">
                         <h3 class="text-xl font-bold text-slate-900">
                             Berita Terbaru
@@ -237,17 +263,16 @@
 
                     @if ($beritas->isNotEmpty())
                         <a
-                            href="#berita"
-                            class="mt-7 inline-flex font-semibold text-emerald-700 hover:text-emerald-800"
+                            href="{{ route('berita.index') }}"
+                            class="mt-auto inline-flex pt-6 text-sm font-semibold text-emerald-700 transition hover:text-emerald-900"
                         >
-                            Lihat berita terbaru
-                            <span class="ml-2">→</span>
+                            Lihat semua berita →
                         </a>
                     @endif
                 </div>
                                
                     {{-- Pengumuman --}}
-                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <div class="flex items-center justify-between gap-3">
                         <h3 class="text-xl font-bold text-slate-900">
                             Pengumuman
@@ -258,7 +283,7 @@
                         </span>
                     </div>
 
-                    <div class="mt-6 space-y-4">
+                    <div class="mt-6 flex-1 space-y-4">
                         @forelse ($pengumumans as $pengumuman)
                         <a
                             href="{{ route('pengumuman.show', $pengumuman) }}"
@@ -294,14 +319,17 @@
                     </div>
 
                     @if ($pengumumans->isNotEmpty())
-                        <p class="mt-7 text-sm font-semibold text-emerald-700">
-                            Pengumuman terbaru MTs Arridho
-                        </p>
+                        <a
+                            href="{{ route('pengumuman.index') }}"
+                            class="mt-auto inline-flex pt-6 text-sm font-semibold text-emerald-700 transition hover:text-emerald-900"
+                        >
+                            Lihat semua pengumuman →
+                        </a>
                     @endif
                 </div>
 
                     {{-- Agenda --}}
-                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div class="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
                         <div class="flex items-center justify-between gap-3">
                             <h3 class="text-xl font-bold text-slate-900">
@@ -330,7 +358,7 @@
                             ];
                         @endphp
 
-                        <div class="mt-6 divide-y divide-slate-100">
+                        <div class="mt-6 flex-1 divide-y divide-slate-100">
 
                             @forelse ($agendas as $agenda)
                                 <article class="flex gap-4 py-5 first:pt-0">
@@ -377,9 +405,12 @@
                         </div>
 
                         @if ($agendas->isNotEmpty())
-                            <p class="mt-5 text-sm font-semibold text-emerald-700">
-                                Agenda kegiatan MTs Arridho
-                            </p>
+                            <a
+                                href="{{ route('agenda.index') }}"
+                                class="mt-auto inline-flex pt-6 text-sm font-semibold text-emerald-700 transition hover:text-emerald-900"
+                            >
+                                Lihat semua agenda →
+                            </a>
                         @endif
 
                     </div>
