@@ -186,6 +186,118 @@
 
         </section>
 
+{{-- Kelola Data Madrasah --}}
+<section class="mt-8 mb-8">
+
+    <div class="mb-5">
+        <p class="text-sm font-semibold text-emerald-700">
+            Data Madrasah
+        </p>
+
+        <h2 class="mt-1 text-2xl font-bold text-slate-900">
+            Kelola Guru, Siswa, dan Prestasi
+        </h2>
+    </div>
+
+    <div class="grid gap-5 md:grid-cols-3">
+
+        {{-- Guru --}}
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-2xl">
+                👨‍🏫
+            </div>
+
+            <h3 class="mt-5 text-lg font-bold text-slate-900">
+                Data Guru
+            </h3>
+
+            <p class="mt-2 text-sm leading-6 text-slate-500">
+                Kelola profil dan informasi guru MTs Arridho.
+            </p>
+
+            <div class="mt-6 flex gap-2">
+                <a
+                    href="{{ route('admin.guru.index') }}"
+                    class="flex-1 rounded-xl border border-emerald-700 px-4 py-2.5 text-center text-sm font-semibold text-emerald-700 hover:bg-emerald-50"
+                >
+                    Kelola
+                </a>
+
+                <a
+                    href="{{ route('admin.guru.create') }}"
+                    class="flex-1 rounded-xl bg-emerald-700 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-emerald-800"
+                >
+                    + Tambah
+                </a>
+            </div>
+        </div>
+
+        {{-- Siswa --}}
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-2xl">
+                🧑‍🎓
+            </div>
+
+            <h3 class="mt-5 text-lg font-bold text-slate-900">
+                Data Siswa
+            </h3>
+
+            <p class="mt-2 text-sm leading-6 text-slate-500">
+                Kelola nama, kelas, dan status siswa.
+            </p>
+
+            <div class="mt-6 flex gap-2">
+                <a
+                    href="{{ route('admin.siswa.index') }}"
+                    class="flex-1 rounded-xl border border-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-blue-600 hover:bg-blue-50"
+                >
+                    Kelola
+                </a>
+
+                <a
+                    href="{{ route('admin.siswa.create') }}"
+                    class="flex-1 rounded-xl bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-700"
+                >
+                    + Tambah
+                </a>
+            </div>
+        </div>
+
+        {{-- Prestasi --}}
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-2xl">
+                🏆
+            </div>
+
+            <h3 class="mt-5 text-lg font-bold text-slate-900">
+                Data Prestasi
+            </h3>
+
+            <p class="mt-2 text-sm leading-6 text-slate-500">
+                Kelola prestasi siswa, guru, tim, dan madrasah.
+            </p>
+
+            <div class="mt-6 flex gap-2">
+                <a
+                    href="{{ route('admin.prestasi.index') }}"
+                    class="flex-1 rounded-xl border border-amber-600 px-4 py-2.5 text-center text-sm font-semibold text-amber-700 hover:bg-amber-50"
+                >
+                    Kelola
+                </a>
+
+                <a
+                    href="{{ route('admin.prestasi.create') }}"
+                    class="flex-1 rounded-xl bg-amber-500 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-amber-600"
+                >
+                    + Tambah
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
         {{-- Statistik --}}
         <section class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
 
@@ -507,7 +619,7 @@
             @endif
 
         </section>
-
+            
     </main>
 
 </body>

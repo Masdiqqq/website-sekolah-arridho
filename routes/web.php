@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\GaleriController;
 use App\Http\Controllers\Admin\GuruController;
 use App\Http\Controllers\Admin\PengumumanController;
+use App\Http\Controllers\Admin\PrestasiController;
+use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WebsiteSettingController;
 use App\Http\Middleware\AdminOnly;
@@ -14,6 +16,8 @@ use App\Models\Berita;
 use App\Models\Galeri;
 use App\Models\Guru;
 use App\Models\Pengumuman;
+use App\Models\Prestasi;
+use App\Models\Siswa;
 use App\Models\WebsiteSetting;
 use Illuminate\Support\Facades\Route;
 
@@ -63,17 +67,32 @@ Route::get('/', function () {
         ->where('status', 'aktif')
         ->count();
 
+    $jumlahSiswa = Siswa::query()
+        ->where('status', 'aktif')
+        ->count();
+
+    $jumlahPrestasi = Prestasi::query()
+        ->where('status', 'published')
+        ->count();
+
     return view('home', compact(
         'beritas',
         'pengumumans',
         'agendas',
         'galeris',
         'pengaturan',
-        'jumlahGuru'
+        'jumlahGuru',
+        'jumlahSiswa',
+        'jumlahPrestasi'
     ));
 })->name('home');
 
-// Daftar guru aktif
+/*
+|--------------------------------------------------------------------------
+| Guru Publik
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/guru', function () {
     $gurus = Guru::query()
         ->where('status', 'aktif')
@@ -84,7 +103,49 @@ Route::get('/guru', function () {
     return view('guru.index', compact('gurus'));
 })->name('guru.index');
 
-// Daftar semua berita yang sudah diterbitkan
+/*
+|--------------------------------------------------------------------------
+| Siswa Publik
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/siswa', function () {
+    $siswas = Siswa::query()
+        ->where('status', 'aktif')
+        ->orderBy('kelas')
+        ->orderBy('nama')
+        ->get();
+
+    $siswaPerKelas = $siswas->groupBy('kelas');
+    $jumlahSiswa = $siswas->count();
+
+    return view('siswa.index', compact(
+        'siswaPerKelas',
+        'jumlahSiswa'
+    ));
+})->name('siswa.index');
+
+/*
+|--------------------------------------------------------------------------
+| Prestasi Publik
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/prestasi', function () {
+    $prestasis = Prestasi::query()
+        ->where('status', 'published')
+        ->latest('tanggal_prestasi')
+        ->paginate(9);
+
+    return view('prestasi.index', compact('prestasis'));
+})->name('prestasi.index');
+
+/*
+|--------------------------------------------------------------------------
+| Berita Publik
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/berita', function () {
     $beritas = Berita::query()
         ->where('status', 'published')
@@ -96,7 +157,6 @@ Route::get('/berita', function () {
     return view('berita.index', compact('beritas'));
 })->name('berita.index');
 
-// Detail berita
 Route::get('/berita/{berita:slug}', function (Berita $berita) {
     abort_unless(
         $berita->status === 'published'
@@ -108,7 +168,12 @@ Route::get('/berita/{berita:slug}', function (Berita $berita) {
     return view('berita.show', compact('berita'));
 })->name('berita.show');
 
-// Daftar semua pengumuman yang telah diterbitkan
+/*
+|--------------------------------------------------------------------------
+| Pengumuman Publik
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/pengumuman', function () {
     $pengumumans = Pengumuman::query()
         ->where('status', 'published')
@@ -120,7 +185,6 @@ Route::get('/pengumuman', function () {
     return view('pengumuman.index', compact('pengumumans'));
 })->name('pengumuman.index');
 
-// Detail pengumuman
 Route::get('/pengumuman/{pengumuman}', function (
     Pengumuman $pengumuman
 ) {
@@ -131,10 +195,18 @@ Route::get('/pengumuman/{pengumuman}', function (
         404
     );
 
-    return view('pengumuman.show', compact('pengumuman'));
+    return view(
+        'pengumuman.show',
+        compact('pengumuman')
+    );
 })->name('pengumuman.show');
 
-// Daftar semua agenda yang telah diterbitkan
+/*
+|--------------------------------------------------------------------------
+| Agenda Publik
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/agenda', function () {
     $agendaMendatang = Agenda::query()
         ->where('status', 'published')
@@ -154,7 +226,12 @@ Route::get('/agenda', function () {
     ));
 })->name('agenda.index');
 
-// Daftar semua album galeri
+/*
+|--------------------------------------------------------------------------
+| Galeri Publik
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/galeri', function () {
     $galeris = Galeri::query()
         ->with('fotos')
@@ -167,7 +244,6 @@ Route::get('/galeri', function () {
     return view('galeri.index', compact('galeris'));
 })->name('galeri.index');
 
-// Detail album galeri
 Route::get('/galeri/{galeri}', function (Galeri $galeri) {
     abort_unless(
         $galeri->status === 'published'
@@ -243,9 +319,6 @@ Route::middleware('auth')
             ]);
 
         Route::resource('galeri', GaleriController::class)
-            ->parameters([
-                'galeri' => 'galeri',
-            ])
             ->only([
                 'index',
                 'create',
@@ -256,7 +329,40 @@ Route::middleware('auth')
             ]);
 
         Route::resource('guru', GuruController::class)
-            ->except(['show']);
+            ->only([
+                'index',
+                'create',
+                'store',
+                'edit',
+                'update',
+                'destroy',
+            ]);
+
+        Route::resource('siswa', SiswaController::class)
+            ->only([
+                'index',
+                'create',
+                'store',
+                'edit',
+                'update',
+                'destroy',
+            ]);
+
+        Route::resource('prestasi', PrestasiController::class)
+            ->only([
+                'index',
+                'create',
+                'store',
+                'edit',
+                'update',
+                'destroy',
+            ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Khusus Admin
+        |--------------------------------------------------------------------------
+        */
 
         Route::middleware(AdminOnly::class)
             ->group(function () {

@@ -122,27 +122,41 @@
                             </p>
                         </a>
 
-                        {{-- Kartu Siswa, sementara belum dinamis --}}
-                        <div class="rounded-xl bg-white/10 p-4 text-center">
+                        {{-- Kartu Siswa --}}
+                        <a
+                            href="{{ route('siswa.index') }}"
+                            class="group rounded-xl bg-white/10 p-4 text-center transition hover:bg-white/20"
+                        >
                             <p class="text-xl font-bold text-white">
-                                150+
+                                {{ number_format($jumlahSiswa ?? 0, 0, ',', '.') }}
                             </p>
 
                             <p class="mt-1 text-xs text-emerald-100">
                                 Siswa
                             </p>
-                        </div>
 
-                        {{-- Kartu Prestasi, sementara belum dinamis --}}
-                        <div class="rounded-xl bg-white/10 p-4 text-center">
+                            <p class="mt-2 hidden text-[10px] font-semibold text-emerald-200 sm:block">
+                                Lihat data →
+                            </p>
+                        </a>
+
+                        {{-- Kartu Prestasi --}}
+                        <a
+                            href="{{ route('prestasi.index') }}"
+                            class="group rounded-xl bg-white/10 p-4 text-center transition hover:bg-white/20"
+                        >
                             <p class="text-xl font-bold text-white">
-                                10+
+                                {{ number_format($jumlahPrestasi ?? 0, 0, ',', '.') }}
                             </p>
 
                             <p class="mt-1 text-xs text-emerald-100">
                                 Prestasi
                             </p>
-                        </div>
+
+                            <p class="mt-2 hidden text-[10px] font-semibold text-emerald-200 sm:block">
+                                Lihat data →
+                            </p>
+                        </a>
 
                     </div>
                     </div>
