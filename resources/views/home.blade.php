@@ -418,44 +418,98 @@
             </div>
         </section>
 
-        <section id="galeri" class="bg-white py-20">
-            <div class="mx-auto max-w-7xl px-5 lg:px-8">
-                <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-                    <div>
-                        <span class="text-sm font-bold uppercase tracking-widest text-emerald-700">Dokumentasi</span>
-                        <h2 class="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">Galeri Kegiatan</h2>
-                        <p class="mt-4 max-w-2xl leading-7 text-slate-600">
-                            Dokumentasi kegiatan pembelajaran, keagamaan, perlombaan, dan aktivitas siswa MTs Arridho.
-                        </p>
-                    </div>
+{{-- Galeri Album --}}
+<section id="galeri" class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-7xl px-5 lg:px-8">
 
-                    <a href="#" class="inline-flex items-center font-semibold text-emerald-700 hover:text-emerald-800">
-                        Lihat semua galeri <span class="ml-2">→</span>
-                    </a>
-                </div>
+        <div class="text-center">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">
+                Dokumentasi
+            </p>
 
-                <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    @foreach ([
-                        ['Kegiatan Sekolah', 'Kegiatan Belajar Mengajar', 'from-emerald-100 to-emerald-50', 'text-emerald-700'],
-                        ['Keagamaan', 'Kegiatan Keagamaan Siswa', 'from-amber-100 to-orange-50', 'text-amber-700'],
-                        ['Prestasi', 'Prestasi dan Perlombaan', 'from-blue-100 to-sky-50', 'text-blue-700'],
-                    ] as [$kategori, $judul, $warna, $teks])
-                        <article class="group overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm">
-                            <div class="flex h-64 items-center justify-center bg-gradient-to-br {{ $warna }}">
-                                <div class="text-center">
-                                    <span class="text-5xl">🖼️</span>
-                                    <p class="mt-3 text-sm font-semibold {{ $teks }}">Foto kegiatan</p>
-                                </div>
-                            </div>
-                            <div class="p-5">
-                                <p class="text-xs font-semibold uppercase tracking-wider {{ $teks }}">{{ $kategori }}</p>
-                                <h3 class="mt-2 text-lg font-bold text-slate-900">{{ $judul }}</h3>
-                            </div>
-                        </article>
+            <h2 class="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
+                Galeri Kegiatan
+            </h2>
+
+            <p class="mx-auto mt-4 max-w-2xl leading-7 text-slate-500">
+                Album dokumentasi kegiatan dan aktivitas MTs Arridho.
+            </p>
+        </div>
+
+        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
+            @forelse ($galeris as $galeri)
+                @php
+                    $fotoAlbum = $galeri->fotos->pluck('gambar');
+
+                    if ($fotoAlbum->isEmpty() && $galeri->gambar) {
+                        $fotoAlbum = collect([$galeri->gambar]);
+                    }
+                @endphp
+
+                <a
+                    href="{{ route('galeri.show', $galeri) }}"
+                    data-album-slider
+                    class="group relative block h-72 overflow-hidden rounded-2xl bg-slate-200 shadow-sm"
+                >
+                    @foreach ($fotoAlbum as $index => $gambar)
+                        <img
+                            data-slide
+                            src="{{ asset('storage/' . $gambar) }}"
+                            alt="{{ $galeri->judul }}"
+                            class="absolute inset-0 h-full w-full object-cover transition duration-700 {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}"
+                        >
                     @endforeach
+
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent"></div>
+
+                    <span class="absolute right-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-700">
+                        {{ $fotoAlbum->count() }} foto
+                    </span>
+
+                    <div class="absolute inset-x-0 bottom-0 p-6 text-white">
+
+                        <p class="text-xs font-semibold text-emerald-200">
+                            {{ $galeri->tanggal_publikasi?->format('d/m/Y') }}
+                        </p>
+
+                        <h3 class="mt-2 text-lg font-bold">
+                            {{ $galeri->judul }}
+                        </h3>
+
+                        <p class="mt-3 text-sm font-semibold text-emerald-200">
+                            Buka album →
+                        </p>
+
+                    </div>
+                </a>
+            @empty
+                <div class="col-span-full rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center">
+
+                    <p class="font-bold text-slate-800">
+                        Belum ada album Galeri
+                    </p>
+
                 </div>
+            @endforelse
+
+        </div>
+
+        @if ($galeris->isNotEmpty())
+            <div class="mt-10 text-center">
+
+                <a
+                    href="{{ route('galeri.index') }}"
+                    class="inline-flex rounded-xl border border-emerald-700 px-6 py-3 font-semibold text-emerald-700 transition hover:bg-emerald-50"
+                >
+                    Lihat semua Galeri →
+                </a>
+
             </div>
-        </section>
+        @endif
+
+    </div>
+</section>
 
         <section id="ppdb" class="bg-slate-50 py-20">
             <div class="mx-auto max-w-7xl px-5 lg:px-8">
@@ -489,60 +543,185 @@
             </div>
         </section>
 
-        <section id="kontak" class="bg-white py-20">
-            <div class="mx-auto max-w-7xl px-5 lg:px-8">
-                <div class="grid gap-12 lg:grid-cols-2">
-                    <div>
-                        <span class="text-sm font-bold uppercase tracking-widest text-emerald-700">Hubungi Kami</span>
-                        <h2 class="mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">Informasi MTs Arridho</h2>
-                        <p class="mt-4 max-w-xl leading-7 text-slate-600">
-                            Hubungi pihak madrasah untuk memperoleh informasi mengenai kegiatan sekolah, pendaftaran peserta didik baru, dan pelayanan administrasi.
-                        </p>
+        @php
+    $nomorWhatsApp = preg_replace(
+        '/[^0-9]/',
+        '',
+        $pengaturan?->whatsapp ?? ''
+    );
 
-                        <div class="mt-9 space-y-4">
-                            @foreach ([
-                                ['Alamat Madrasah', 'Alamat lengkap MTs Arridho belum diisi', '📍'],
-                                ['Telepon / WhatsApp', 'Nomor telepon belum diisi', '☎️'],
-                                ['Email', 'Email madrasah belum diisi', '✉️'],
-                                ['Jam Pelayanan', 'Senin–Sabtu, 08.00–14.00 WIB', '🕒'],
-                            ] as [$judul, $isi, $ikon])
-                                <div class="flex gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-xl">
-                                        {{ $ikon }}
-                                    </div>
-                                    <div>
-                                        <h3 class="font-bold text-slate-900">{{ $judul }}</h3>
-                                        <p class="mt-1 leading-6 text-slate-600">{{ $isi }}</p>
-                                    </div>
-                                </div>
-                            @endforeach
+    if (
+        $nomorWhatsApp
+        && str_starts_with($nomorWhatsApp, '0')
+    ) {
+        $nomorWhatsApp =
+            '62' . substr($nomorWhatsApp, 1);
+    }
+@endphp
+
+<section id="kontak" class="bg-white py-20">
+    <div class="mx-auto max-w-7xl px-5 lg:px-8">
+
+        <div class="grid gap-10 lg:grid-cols-2 lg:items-stretch">
+
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">
+                    Hubungi Kami
+                </p>
+
+                <h2 class="mt-4 text-3xl font-bold text-slate-900 sm:text-4xl">
+                    Informasi MTs Arridho
+                </h2>
+
+                <p class="mt-5 max-w-xl leading-7 text-slate-600">
+                    Hubungi pihak madrasah untuk memperoleh informasi
+                    mengenai kegiatan sekolah, pendaftaran peserta didik
+                    baru, dan pelayanan administrasi.
+                </p>
+
+                <div class="mt-9 space-y-4">
+
+                    <div class="flex gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-xl">
+                            📍
                         </div>
-                    </div>
 
-                    <div class="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-sm">
-                        <div class="flex min-h-[420px] items-center justify-center bg-gradient-to-br from-emerald-100 to-slate-100">
-                            <div class="max-w-sm px-6 text-center">
-                                <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white text-3xl shadow-md">📍</div>
-                                <h3 class="mt-5 text-xl font-bold text-slate-900">Lokasi MTs Arridho</h3>
-                                <p class="mt-3 leading-7 text-slate-600">
-                                    Google Maps akan ditampilkan setelah alamat dan tautan lokasi madrasah tersedia.
-                                </p>
-                                <a href="#" class="mt-6 inline-flex rounded-xl bg-emerald-700 px-6 py-3 font-semibold text-white transition hover:bg-emerald-800">
-                                    Buka Google Maps
-                                </a>
-                            </div>
-                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900">
+                                Alamat Madrasah
+                            </h3>
 
-                        <div class="border-t border-slate-200 bg-white p-6">
-                            <h3 class="font-bold text-slate-900">Kunjungi Madrasah Kami</h3>
-                            <p class="mt-2 text-sm leading-6 text-slate-500">
-                                Lokasi dan alamat lengkap dapat diubah ketika fitur pengaturan website dibuat.
+                            <p class="mt-1 whitespace-pre-line leading-6 text-slate-600">
+                                {{ $pengaturan?->alamat ?: 'Alamat madrasah belum diisi.' }}
                             </p>
                         </div>
+
                     </div>
+
+                    <div class="flex gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-xl">
+                            ☎️
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-900">
+                                Telepon / WhatsApp
+                            </h3>
+
+                            @if ($nomorWhatsApp)
+                                <a
+                                    href="https://wa.me/{{ $nomorWhatsApp }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="mt-1 inline-block text-slate-600 transition hover:text-emerald-700"
+                                >
+                                    {{ $pengaturan->whatsapp }}
+                                </a>
+                            @else
+                                <p class="mt-1 text-slate-600">
+                                    Nomor telepon belum diisi.
+                                </p>
+                            @endif
+                        </div>
+
+                    </div>
+
+                    <div class="flex gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-xl">
+                            ✉️
+                        </div>
+
+                        <div>
+                            <h3 class="font-bold text-slate-900">
+                                Email
+                            </h3>
+
+                            @if ($pengaturan?->email)
+                                <a
+                                    href="mailto:{{ $pengaturan->email }}"
+                                    class="mt-1 inline-block break-all text-slate-600 transition hover:text-emerald-700"
+                                >
+                                    {{ $pengaturan->email }}
+                                </a>
+                            @else
+                                <p class="mt-1 text-slate-600">
+                                    Email madrasah belum diisi.
+                                </p>
+                            @endif
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
-        </section>
+
+            {{-- Tampilan Google Maps --}}
+            <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+
+                @if ($pengaturan?->alamat)
+                    <div class="relative h-[420px] bg-slate-200">
+
+                        <iframe
+                            src="{{ 'https://www.google.com/maps?q=' . urlencode(trim($pengaturan->alamat)) . '&output=embed' }}"
+                            class="absolute inset-0 h-full w-full border-0"
+                            loading="lazy"
+                            allowfullscreen
+                            referrerpolicy="no-referrer-when-downgrade"
+                            title="Lokasi MTs Arridho"
+                        ></iframe>
+
+                    </div>
+                @else
+                    <div class="flex min-h-[420px] flex-col items-center justify-center bg-gradient-to-br from-emerald-100 to-cyan-50 px-7 py-12 text-center">
+
+                        <div class="flex h-20 w-20 items-center justify-center rounded-full bg-white text-3xl shadow-md">
+                            📍
+                        </div>
+
+                        <h3 class="mt-7 text-xl font-bold text-slate-900">
+                            Lokasi MTs Arridho
+                        </h3>
+
+                        <p class="mt-4 max-w-md leading-7 text-slate-600">
+                            Peta akan ditampilkan setelah alamat madrasah
+                            diisi melalui menu Pengaturan Website.
+                        </p>
+
+                    </div>
+                @endif
+
+                <div class="border-t border-slate-200 bg-white px-7 py-6">
+
+                    <h3 class="font-bold text-slate-900">
+                        Lokasi MTs Arridho
+                    </h3>
+
+                    <p class="mt-2 text-sm leading-6 text-slate-500">
+                        {{ $pengaturan?->alamat ?: 'Alamat madrasah belum diisi.' }}
+                    </p>
+
+                    @if ($pengaturan?->google_maps_url)
+                        <a
+                            href="{{ $pengaturan->google_maps_url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="mt-5 inline-flex rounded-xl bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800"
+                        >
+                            Buka di Google Maps
+                        </a>
+                    @endif
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
     </main>
 
     <footer class="bg-emerald-950 text-white">
@@ -576,10 +755,51 @@
 
                 <div>
                     <h3 class="font-bold">Kontak</h3>
+
                     <div class="mt-5 space-y-3 text-sm leading-6 text-emerald-100/70">
-                        <p>Alamat madrasah belum diisi</p>
-                        <p>Telepon belum diisi</p>
-                        <p>Email belum diisi</p>
+
+                        {{-- Alamat dari Pengaturan Website --}}
+                        @if ($pengaturan?->alamat)
+                            @if ($pengaturan?->google_maps_url)
+                                <a
+                                    href="{{ $pengaturan->google_maps_url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="block transition hover:text-white"
+                                >{!! nl2br(e(trim($pengaturan->alamat))) !!}</a>
+                            @else
+                                <p>{!! nl2br(e(trim($pengaturan->alamat))) !!}</p>
+                            @endif
+                        @else
+                            <p>Alamat madrasah belum diisi</p>
+                        @endif
+
+                        {{-- Nomor WhatsApp dari Pengaturan Website --}}
+                        @if ($nomorWhatsApp)
+                            <a
+                                href="https://wa.me/{{ $nomorWhatsApp }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="block transition hover:text-white"
+                            >
+                                {{ $pengaturan->whatsapp }}
+                            </a>
+                        @else
+                            <p>Telepon belum diisi</p>
+                        @endif
+
+                        {{-- Email dari Pengaturan Website --}}
+                        @if ($pengaturan?->email)
+                            <a
+                                href="mailto:{{ $pengaturan->email }}"
+                                class="block break-all transition hover:text-white"
+                            >
+                                {{ $pengaturan->email }}
+                            </a>
+                        @else
+                            <p>Email belum diisi</p>
+                        @endif
+
                     </div>
                 </div>
             </div>
@@ -590,5 +810,31 @@
             </div>
         </div>
     </footer>
+    <script>
+    document
+        .querySelectorAll('[data-album-slider]')
+        .forEach(function (album, albumIndex) {
+            const slides = Array.from(
+                album.querySelectorAll('[data-slide]')
+            );
+
+            if (slides.length <= 1) {
+                return;
+            }
+
+            let slideAktif = 0;
+
+            setInterval(function () {
+                slides[slideAktif].classList.remove('opacity-100');
+                slides[slideAktif].classList.add('opacity-0');
+
+                slideAktif =
+                    (slideAktif + 1) % slides.length;
+
+                slides[slideAktif].classList.remove('opacity-0');
+                slides[slideAktif].classList.add('opacity-100');
+            }, 3000 + (albumIndex * 300));
+        });
+</script>
 </body>
 </html>

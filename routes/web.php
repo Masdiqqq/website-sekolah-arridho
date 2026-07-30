@@ -4,9 +4,15 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\PengumumanController;
 use App\Http\Controllers\Admin\AgendaController;
+use App\Http\Controllers\Admin\GaleriController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WebsiteSettingController;
+use App\Http\Middleware\AdminOnly;
+use App\Models\WebsiteSetting;
 use App\Models\Berita;
 use App\Models\Pengumuman;
 use App\Models\Agenda;
+use App\Models\Galeri;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,7 +28,7 @@ use Illuminate\Support\Facades\Route;
             ->whereNotNull('tanggal_publikasi')
             ->where('tanggal_publikasi', '<=', now())
             ->latest('tanggal_publikasi')
-            ->take(4)
+            ->take(3)
             ->get();
 
         $pengumumans = Pengumuman::query()
@@ -40,10 +46,23 @@ use Illuminate\Support\Facades\Route;
             ->take(4)
             ->get();
 
+        $galeris = Galeri::query()
+            ->with('fotos')
+            ->where('status', 'published')
+            ->whereNotNull('tanggal_publikasi')
+            ->where('tanggal_publikasi', '<=', now())
+            ->latest('tanggal_publikasi')
+            ->take(6)
+            ->get();
+
+        $pengaturan = WebsiteSetting::query()->first();
+
         return view('home', compact(
             'beritas',
             'pengumumans',
-            'agendas'
+            'agendas',
+            'galeris',
+            'pengaturan'
         ));
     })->name('home');
 
@@ -121,6 +140,41 @@ Route::get('/agenda', function () {
     ));
 })->name('agenda.index');
 
+$galeris = Galeri::query()
+    ->where('status', 'published')
+    ->whereNotNull('tanggal_publikasi')
+    ->where('tanggal_publikasi', '<=', now())
+    ->latest('tanggal_publikasi')
+    ->take(6)
+    ->get();
+
+
+// Daftar semua album Galeri
+Route::get('/galeri', function () {
+    $galeris = Galeri::query()
+        ->with('fotos')
+        ->where('status', 'published')
+        ->whereNotNull('tanggal_publikasi')
+        ->where('tanggal_publikasi', '<=', now())
+        ->latest('tanggal_publikasi')
+        ->paginate(9);
+
+    return view('galeri.index', compact('galeris'));
+})->name('galeri.index');
+
+// Detail album Galeri
+Route::get('/galeri/{galeri}', function (Galeri $galeri) {
+    abort_unless(
+        $galeri->status === 'published'
+        && $galeri->tanggal_publikasi
+        && $galeri->tanggal_publikasi->lte(now()),
+        404
+    );
+
+    $galeri->load('fotos');
+
+    return view('galeri.show', compact('galeri'));
+})->name('galeri.show');    
 
 
 /*
@@ -128,6 +182,7 @@ Route::get('/agenda', function () {
 | Login Pengelola
 |--------------------------------------------------------------------------
 */
+
 
 Route::get(
     '/admin/login',
@@ -153,6 +208,19 @@ Route::middleware('auth')
             '/dashboard',
             [AdminAuthController::class, 'dashboard']
         )->name('dashboard');
+
+        Route::middleware(AdminOnly::class)
+    ->group(function () {
+        Route::get(
+            '/pengaturan',
+            [WebsiteSettingController::class, 'index']
+        )->name('pengaturan.index');
+
+        Route::put(
+            '/pengaturan',
+            [WebsiteSettingController::class, 'update']
+        )->name('pengaturan.update');
+    });
 
         Route::resource(
             'berita',
@@ -196,8 +264,38 @@ Route::middleware('auth')
                 'destroy',
             ]);    
 
+            Route::resource('galeri', GaleriController::class)
+                ->parameters([
+                    'galeri' => 'galeri',
+                ])
+                ->only([
+                    'index',
+                    'create',
+                    'store',
+                    'edit',
+                    'update',
+                    'destroy',
+                ]);
+
+Route::middleware(AdminOnly::class)
+    ->group(function () {
+        Route::resource(
+            'pengguna',
+            UserController::class
+        )->only([
+            'index',
+            'create',
+            'store',
+            'edit',
+            'update',
+            'destroy',
+        ]);
+    });
+
         Route::post(
             '/logout',
             [AdminAuthController::class, 'logout']
         )->name('logout');
     });
+
+    

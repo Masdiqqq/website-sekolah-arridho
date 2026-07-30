@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Agenda;
 use App\Models\Berita;
 use App\Models\Pengumuman;
+use App\Models\Galeri;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -150,6 +151,27 @@ class AdminAuthController extends Controller
                 ];
             });
 
+            $galeri = Galeri::query()
+    ->get()
+    ->map(function (Galeri $galeri): array {
+        return [
+            'id' => $galeri->id,
+            'judul' => $galeri->judul,
+            'jenis' => 'Galeri',
+            'status' => $galeri->status,
+
+            'tanggal' => $galeri->tanggal_publikasi
+                ?? $galeri->created_at,
+
+            'diperbarui' => $galeri->updated_at
+                ?? $galeri->created_at,
+
+            'route_edit' => 'admin.galeri.edit',
+            'route_index' => 'admin.galeri.index',
+            'ikon' => '🖼️',
+        ];
+    });
+
         /*
         |--------------------------------------------------------------------------
         | Gabungkan dan urutkan konten
@@ -160,6 +182,7 @@ class AdminAuthController extends Controller
             ->concat($berita)
             ->concat($pengumuman)
             ->concat($agenda)
+            ->concat($galeri)
             ->sortByDesc(function (array $konten): int {
                 return $konten['diperbarui']?->timestamp ?? 0;
             })
@@ -196,6 +219,7 @@ class AdminAuthController extends Controller
             'jumlahBerita' => Berita::count(),
             'jumlahPengumuman' => Pengumuman::count(),
             'jumlahAgenda' => Agenda::count(),
+            'jumlahGaleri' => Galeri::count(),
             'kontenTerbaru' => $kontenTerbaru,
         ]);
     }
