@@ -1,18 +1,20 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAuthController;
-use App\Http\Controllers\Admin\BeritaController;
-use App\Http\Controllers\Admin\PengumumanController;
 use App\Http\Controllers\Admin\AgendaController;
+use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\GaleriController;
+use App\Http\Controllers\Admin\GuruController;
+use App\Http\Controllers\Admin\PengumumanController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WebsiteSettingController;
 use App\Http\Middleware\AdminOnly;
-use App\Models\WebsiteSetting;
-use App\Models\Berita;
-use App\Models\Pengumuman;
 use App\Models\Agenda;
+use App\Models\Berita;
 use App\Models\Galeri;
+use App\Models\Guru;
+use App\Models\Pengumuman;
+use App\Models\WebsiteSetting;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,49 +24,65 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Beranda
-    Route::get('/', function () {
-        $beritas = Berita::query()
-            ->where('status', 'published')
-            ->whereNotNull('tanggal_publikasi')
-            ->where('tanggal_publikasi', '<=', now())
-            ->latest('tanggal_publikasi')
-            ->take(3)
-            ->get();
+Route::get('/', function () {
+    $beritas = Berita::query()
+        ->where('status', 'published')
+        ->whereNotNull('tanggal_publikasi')
+        ->where('tanggal_publikasi', '<=', now())
+        ->latest('tanggal_publikasi')
+        ->take(3)
+        ->get();
 
-        $pengumumans = Pengumuman::query()
-            ->where('status', 'published')
-            ->whereNotNull('tanggal_publikasi')
-            ->where('tanggal_publikasi', '<=', now())
-            ->latest('tanggal_publikasi')
-            ->take(2)
-            ->get();
+    $pengumumans = Pengumuman::query()
+        ->where('status', 'published')
+        ->whereNotNull('tanggal_publikasi')
+        ->where('tanggal_publikasi', '<=', now())
+        ->latest('tanggal_publikasi')
+        ->take(2)
+        ->get();
 
-        $agendas = Agenda::query()
-            ->where('status', 'published')
-            ->where('tanggal_mulai', '>=', now()->startOfDay())
-            ->oldest('tanggal_mulai')
-            ->take(4)
-            ->get();
+    $agendas = Agenda::query()
+        ->where('status', 'published')
+        ->where('tanggal_mulai', '>=', now()->startOfDay())
+        ->oldest('tanggal_mulai')
+        ->take(4)
+        ->get();
 
-        $galeris = Galeri::query()
-            ->with('fotos')
-            ->where('status', 'published')
-            ->whereNotNull('tanggal_publikasi')
-            ->where('tanggal_publikasi', '<=', now())
-            ->latest('tanggal_publikasi')
-            ->take(6)
-            ->get();
+    $galeris = Galeri::query()
+        ->with('fotos')
+        ->where('status', 'published')
+        ->whereNotNull('tanggal_publikasi')
+        ->where('tanggal_publikasi', '<=', now())
+        ->latest('tanggal_publikasi')
+        ->take(6)
+        ->get();
 
-        $pengaturan = WebsiteSetting::query()->first();
+    $pengaturan = WebsiteSetting::query()->first();
 
-        return view('home', compact(
-            'beritas',
-            'pengumumans',
-            'agendas',
-            'galeris',
-            'pengaturan'
-        ));
-    })->name('home');
+    $jumlahGuru = Guru::query()
+        ->where('status', 'aktif')
+        ->count();
+
+    return view('home', compact(
+        'beritas',
+        'pengumumans',
+        'agendas',
+        'galeris',
+        'pengaturan',
+        'jumlahGuru'
+    ));
+})->name('home');
+
+// Daftar guru aktif
+Route::get('/guru', function () {
+    $gurus = Guru::query()
+        ->where('status', 'aktif')
+        ->orderBy('urutan')
+        ->orderBy('nama')
+        ->get();
+
+    return view('guru.index', compact('gurus'));
+})->name('guru.index');
 
 // Daftar semua berita yang sudah diterbitkan
 Route::get('/berita', function () {
@@ -102,7 +120,6 @@ Route::get('/pengumuman', function () {
     return view('pengumuman.index', compact('pengumumans'));
 })->name('pengumuman.index');
 
-
 // Detail pengumuman
 Route::get('/pengumuman/{pengumuman}', function (
     Pengumuman $pengumuman
@@ -114,10 +131,7 @@ Route::get('/pengumuman/{pengumuman}', function (
         404
     );
 
-    return view(
-        'pengumuman.show',
-        compact('pengumuman')
-    );
+    return view('pengumuman.show', compact('pengumuman'));
 })->name('pengumuman.show');
 
 // Daftar semua agenda yang telah diterbitkan
@@ -140,16 +154,7 @@ Route::get('/agenda', function () {
     ));
 })->name('agenda.index');
 
-$galeris = Galeri::query()
-    ->where('status', 'published')
-    ->whereNotNull('tanggal_publikasi')
-    ->where('tanggal_publikasi', '<=', now())
-    ->latest('tanggal_publikasi')
-    ->take(6)
-    ->get();
-
-
-// Daftar semua album Galeri
+// Daftar semua album galeri
 Route::get('/galeri', function () {
     $galeris = Galeri::query()
         ->with('fotos')
@@ -162,7 +167,7 @@ Route::get('/galeri', function () {
     return view('galeri.index', compact('galeris'));
 })->name('galeri.index');
 
-// Detail album Galeri
+// Detail album galeri
 Route::get('/galeri/{galeri}', function (Galeri $galeri) {
     abort_unless(
         $galeri->status === 'published'
@@ -174,15 +179,13 @@ Route::get('/galeri/{galeri}', function (Galeri $galeri) {
     $galeri->load('fotos');
 
     return view('galeri.show', compact('galeri'));
-})->name('galeri.show');    
-
+})->name('galeri.show');
 
 /*
 |--------------------------------------------------------------------------
 | Login Pengelola
 |--------------------------------------------------------------------------
 */
-
 
 Route::get(
     '/admin/login',
@@ -209,25 +212,39 @@ Route::middleware('auth')
             [AdminAuthController::class, 'dashboard']
         )->name('dashboard');
 
-        Route::middleware(AdminOnly::class)
-    ->group(function () {
-        Route::get(
-            '/pengaturan',
-            [WebsiteSettingController::class, 'index']
-        )->name('pengaturan.index');
+        Route::resource('berita', BeritaController::class)
+            ->only([
+                'index',
+                'create',
+                'store',
+                'edit',
+                'update',
+                'destroy',
+            ]);
 
-        Route::put(
-            '/pengaturan',
-            [WebsiteSettingController::class, 'update']
-        )->name('pengaturan.update');
-    });
+        Route::resource('pengumuman', PengumumanController::class)
+            ->only([
+                'index',
+                'create',
+                'store',
+                'edit',
+                'update',
+                'destroy',
+            ]);
 
-        Route::resource(
-            'berita',
-            BeritaController::class
-        )
+        Route::resource('agenda', AgendaController::class)
+            ->only([
+                'index',
+                'create',
+                'store',
+                'edit',
+                'update',
+                'destroy',
+            ]);
+
+        Route::resource('galeri', GaleriController::class)
             ->parameters([
-                'berita' => 'berita',
+                'galeri' => 'galeri',
             ])
             ->only([
                 'index',
@@ -238,64 +255,34 @@ Route::middleware('auth')
                 'destroy',
             ]);
 
-        Route::resource(
-            'pengumuman',
-            PengumumanController::class
-        )
-            ->only([
-                'index',
-                'create',
-                'store',
-                'edit',
-                'update',
-                'destroy',
-            ]);
+        Route::resource('guru', GuruController::class)
+            ->except(['show']);
 
-        Route::resource(
-            'agenda', 
-            AgendaController::class
-        )
-            ->only([
-                'index',
-                'create',
-                'store',
-                'edit',
-                'update',
-                'destroy',
-            ]);    
+        Route::middleware(AdminOnly::class)
+            ->group(function () {
+                Route::resource('pengguna', UserController::class)
+                    ->only([
+                        'index',
+                        'create',
+                        'store',
+                        'edit',
+                        'update',
+                        'destroy',
+                    ]);
 
-            Route::resource('galeri', GaleriController::class)
-                ->parameters([
-                    'galeri' => 'galeri',
-                ])
-                ->only([
-                    'index',
-                    'create',
-                    'store',
-                    'edit',
-                    'update',
-                    'destroy',
-                ]);
+                Route::get(
+                    '/pengaturan',
+                    [WebsiteSettingController::class, 'index']
+                )->name('pengaturan.index');
 
-Route::middleware(AdminOnly::class)
-    ->group(function () {
-        Route::resource(
-            'pengguna',
-            UserController::class
-        )->only([
-            'index',
-            'create',
-            'store',
-            'edit',
-            'update',
-            'destroy',
-        ]);
-    });
+                Route::put(
+                    '/pengaturan',
+                    [WebsiteSettingController::class, 'update']
+                )->name('pengaturan.update');
+            });
 
         Route::post(
             '/logout',
             [AdminAuthController::class, 'logout']
         )->name('logout');
     });
-
-    

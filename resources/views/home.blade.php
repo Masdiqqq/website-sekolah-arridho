@@ -103,19 +103,48 @@
                         </div>
 
                         <div class="mt-7 grid grid-cols-3 gap-3">
-                            <div class="rounded-xl bg-white/10 p-4 text-center">
-                                <p class="text-xl font-bold text-white">12+</p>
-                                <p class="mt-1 text-xs text-emerald-100">Guru</p>
-                            </div>
-                            <div class="rounded-xl bg-white/10 p-4 text-center">
-                                <p class="text-xl font-bold text-white">150+</p>
-                                <p class="mt-1 text-xs text-emerald-100">Siswa</p>
-                            </div>
-                            <div class="rounded-xl bg-white/10 p-4 text-center">
-                                <p class="text-xl font-bold text-white">10+</p>
-                                <p class="mt-1 text-xs text-emerald-100">Prestasi</p>
-                            </div>
+
+                        {{-- Kartu Guru --}}
+                        <a
+                            href="{{ route('guru.index') }}"
+                            class="group rounded-xl bg-white/10 p-4 text-center transition hover:bg-white/20"
+                        >
+                            <p class="text-xl font-bold text-white">
+                                {{ number_format($jumlahGuru ?? 0, 0, ',', '.') }}
+                            </p>
+
+                            <p class="mt-1 text-xs text-emerald-100">
+                                Guru
+                            </p>
+
+                            <p class="mt-2 hidden text-[10px] font-semibold text-emerald-200 sm:block">
+                                Lihat data →
+                            </p>
+                        </a>
+
+                        {{-- Kartu Siswa, sementara belum dinamis --}}
+                        <div class="rounded-xl bg-white/10 p-4 text-center">
+                            <p class="text-xl font-bold text-white">
+                                150+
+                            </p>
+
+                            <p class="mt-1 text-xs text-emerald-100">
+                                Siswa
+                            </p>
                         </div>
+
+                        {{-- Kartu Prestasi, sementara belum dinamis --}}
+                        <div class="rounded-xl bg-white/10 p-4 text-center">
+                            <p class="text-xl font-bold text-white">
+                                10+
+                            </p>
+
+                            <p class="mt-1 text-xs text-emerald-100">
+                                Prestasi
+                            </p>
+                        </div>
+
+                    </div>
                     </div>
                 </div>
             </div>
